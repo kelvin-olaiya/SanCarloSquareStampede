@@ -1,26 +1,121 @@
 incarnation: protelis
 
-network-model:
-  type: ConnectWithinDistance
-  parameters: [0.5]
+environment:
+  type: EnvironmentWithDynamics
+  parameters: [../sanCarloSquare.png, 0.08, -100, -76]
 
-_gradient: &gradient
-  - time-distribution: 1
-    program: org:protelis:tutorial:distanceTo
-  - program: send
+variables:
+  danger: &danger
+    formula: "\"danger\""
+  exit1: &exit1
+    formula: "\"exit1\""
+  exit2: &exit2
+    formula: "\"exit2\""
+  exit3: &exit3
+    formula: "\"exit3\""
+  exit4: &exit4
+    formula: "\"exit4\""
+
+layers:
+  - type: BidimensionalGaussianLayer
+    molecule: *danger
+    parameters: [-21, -33, 200, 5]
+  - type: BidimensionalGaussianLayer
+    molecule: *exit1
+    parameters: [-105, -1.5, 50, 10]
+  - type: BidimensionalGaussianLayer
+    molecule: *exit2
+    parameters: [-84, -64, 50, 7]
+  - type: BidimensionalGaussianLayer
+    molecule: *exit3
+    parameters: [-84, 64, 50, 7]
+  - type: BidimensionalGaussianLayer
+    molecule: *exit4
+    parameters: [104, -5, 50, 10]
+
+_behavior: &behavior
+  - time-distribution:
+      type: DiracComb
+      parameters: [1.0]
+    type: CognitiveBehavior
+  - time-distribution:
+      type: DiracComb
+      parameters: [1.0]
+    type: PhysicalBlendedSteering
+    actions:
+      - type: CognitiveAgentAvoidLayer
+        parameters: [*danger]
+      - type: CognitiveAgentFollowLayer
+        parameters: [*exit1]
+      - type: CognitiveAgentFollowLayer
+        parameters: [*exit2]
+      - type: CognitiveAgentFollowLayer
+        parameters: [*exit3]
+      - type: CognitiveAgentFollowLayer
+        parameters: [*exit4]
+      - type: CognitiveAgentObstacleAvoidance
+        parameters: [6]
+    conditions:
+      - type: WantToEscape
+_san_carlo_square: &square
+  [[-78.0, -40.0], [-68.0, -28.0], [-62.0, -14.0],
+   [-65.0, 9.0], [-75.0, 22.0], [-77.0, 29.0], [60.0, 30.0],
+   [60.0, -40.0]]
+
+_adult_deployment: &adult_males
+  - type: Polygon
+    # parameters: [30000, -78.0, -40.0, 138.0, 70.56]
+    parameters: [30000, *square]
+    properties:
+      - type: Human
+        parameters: ["adult", "male"]
+      - type: Cognitive2D
+        parameters: [*danger]
+      - type: Perceptive2D
+      - type: CognitivePedestrian
+      - type: PhysicalPedestrian2D
+      - type: CircularArea
+    programs: *behavior
+
+_child_deployment: &child_males
+  - <<: *adult_males
+    #parameters: [1000, -78.0, -40.0, 138.0, 70.56]
+    parameters: [1000, *square]
+    properties:
+      - type: Human
+        parameters: ["child", "male"]
+      - type: Cognitive2D
+        parameters: [*danger]
+      - type: Perceptive2D
+      - type: CognitivePedestrian
+      - type: PhysicalPedestrian2D
+      - type: CircularArea
+    programs: *behavior
 
 deployments:
-  type: Grid
-  parameters: [-5, -5, 5, 5, 0.25, 0.25, 0.1, 0.1]
-  contents:
-    - in:
-        type: Rectangle
-        parameters: [-6, -6, 2, 2]
-      molecule: source
-      concentration: true
-    - in:
-        type: Rectangle
-        parameters: [4, 4, 6, 6]
-      molecule: destination
-      concentration: true
-  programs: *gradient
+  - *adult_males
+  - <<: *adult_males
+    # parameters: [10000, -78.0, -40.0, 138.0, 70.56]
+    parameters: [10000, *square]
+    properties:
+      - type: Human
+        parameters: ["adult", "female"]
+      - type: Cognitive2D
+        parameters: [*danger]
+      - type: Perceptive2D
+      - type: CognitivePedestrian
+      - type: PhysicalPedestrian2D
+      - type: CircularArea
+  - <<: *child_males
+  - <<: *child_males
+    #parameters: [800, -78.0, -40.0, 138.0, 70.56]
+    parameters: [800, *square]
+    properties:
+      - type: Human
+        parameters: ["child", "female"]
+      - type: Cognitive2D
+        parameters: [*danger]
+      - type: Perceptive2D
+      - type: CognitivePedestrian
+      - type: PhysicalPedestrian2D
+      - type: CircularArea
