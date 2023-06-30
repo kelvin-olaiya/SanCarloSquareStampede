@@ -2,7 +2,7 @@ incarnation: protelis
 
 environment:
   type: EnvironmentWithDynamics
-  parameters: [../sanCarloSquare.png, 0.08, -100, -76]
+  parameters: [sanCarloSquare.png, 0.08, -100, -76]
 
 variables:
   danger: &danger
