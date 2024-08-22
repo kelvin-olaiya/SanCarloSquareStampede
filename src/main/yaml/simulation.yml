@@ -1,20 +1,24 @@
 incarnation: protelis
 
+launcher:
+  type: DefaultLauncher
+  parameters: [true, true]
+
 environment:
   type: EnvironmentWithDynamics
   parameters: [sanCarloSquare.png, 0.08, -100, -76]
 
 variables:
-  danger: &danger
-    formula: "\"danger\""
-  exit1: &exit1
-    formula: "\"exit1\""
-  exit2: &exit2
-    formula: "\"exit2\""
-  exit3: &exit3
-    formula: "\"exit3\""
-  exit4: &exit4
-    formula: "\"exit4\""
+  - danger: &danger
+      formula: '"danger"'
+  - exit1: &exit1
+      formula: '"exit1"'
+  - exit2: &exit2
+      formula: '"exit2"'
+  - exit3: &exit3
+      formula: '"exit3"'
+  - exit4: &exit4
+      formula: '"exit4"'
 
 layers:
   - type: BidimensionalGaussianLayer
@@ -57,14 +61,20 @@ _behavior: &behavior
         parameters: [6]
     conditions:
       - type: WantToEscape
-_san_carlo_square: &square
-  [[-78.0, -40.0], [-68.0, -28.0], [-62.0, -14.0],
-   [-65.0, 9.0], [-75.0, 22.0], [-77.0, 29.0], [60.0, 30.0],
-   [60.0, -40.0]]
+_san_carlo_square:
+  &square [
+    [-78.0, -40.0],
+    [-68.0, -28.0],
+    [-62.0, -14.0],
+    [-65.0, 9.0],
+    [-75.0, 22.0],
+    [-77.0, 29.0],
+    [60.0, 30.0],
+    [60.0, -40.0],
+  ]
 
 _adult_deployment: &adult_males
   - type: Polygon
-    # parameters: [30000, -78.0, -40.0, 138.0, 70.56]
     parameters: [30000, *square]
     properties:
       - type: Human
@@ -79,7 +89,6 @@ _adult_deployment: &adult_males
 
 _child_deployment: &child_males
   - <<: *adult_males
-    #parameters: [1000, -78.0, -40.0, 138.0, 70.56]
     parameters: [1000, *square]
     properties:
       - type: Human
@@ -95,7 +104,6 @@ _child_deployment: &child_males
 deployments:
   - *adult_males
   - <<: *adult_males
-    # parameters: [10000, -78.0, -40.0, 138.0, 70.56]
     parameters: [10000, *square]
     properties:
       - type: Human
@@ -108,7 +116,6 @@ deployments:
       - type: CircularArea
   - <<: *child_males
   - <<: *child_males
-    #parameters: [800, -78.0, -40.0, 138.0, 70.56]
     parameters: [800, *square]
     properties:
       - type: Human

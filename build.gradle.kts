@@ -70,15 +70,28 @@ File(rootProject.rootDir.path + "/src/main/yaml").listFiles()
                 }
             )
             // These are the program arguments
-            args("-y", it.absolutePath, "-e", "$exportsDir/${it.nameWithoutExtension}-${System.currentTimeMillis()}")
+            args("run", it.absolutePath, "--verbosity", "error", "--override")
             if (System.getenv("CI") == "true" || batch == "true") {
                 // If it is running in a Continuous Integration environment, use the "headless" mode of the simulator
                 // Namely, force the simulator not to use graphical output.
-                args("-hl", "-t", maxTime)
+                args(
+                    """
+                        terminate:
+                        - type: AfterTime
+                          parameters: $maxTime
+                    """.trimIndent(),
+                )
             } else {
                 // A graphics environment should be available, so load the effects for the UI from the "effects" folder
                 // Effects are expected to be named after the simulation file
-                args("-g", "effects/${it.nameWithoutExtension}.json")
+                args(
+                    """
+                        monitors:
+                          type: SwingGUI
+                          parameters:
+                            graphics: effects/${it.nameWithoutExtension}.json
+                    """,
+                )
             }
             // This tells gradle that this task may modify the content of the export directory
             outputs.dir(exportsDir)
